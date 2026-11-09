@@ -23,7 +23,7 @@ class RouteStats:
         self.satisfaction = satisfaction
 
 
-# ---------- бинарный поиск ----------
+# бинарный поиск 
 
 def lower_bound(items, value):
     """бинарный поиск левой границы, индекс первого элемента, который >= value (список отсортирован)."""
