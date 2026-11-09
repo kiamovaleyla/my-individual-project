@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Анализ маршрута</h2>
+<form method="post" action="/route">
+  <select name="origin">
+    {% for a in airports %}
+    <option {% if a == origin %}selected{% endif %}>{{ a }}</option>
+    {% endfor %}
+  </select>
+  →
+  <select name="destination">
+    {% for a in airports %}
+    <option {% if a == destination %}selected{% endif %}>{{ a }}</option>
+    {% endfor %}
+  </select>
+  <button>Анализировать</button>
+</form>
+
+{% if stats %}
+<h3>{{ stats.origin }} → {{ stats.destination }}</h3>
+<table>
+  <tr><td>Рейсов</td><td>{{ stats.flights }}</td></tr>
+  <tr><td>Средняя длительность</td><td>{{ stats.duration }} мин</td></tr>
+  <tr><td>Задержка вылета</td><td>{{ stats.dep_delay }} мин</td></tr>
+  <tr><td>Задержка прибытия</td><td>{{ stats.arr_delay }} мин</td></tr>
+  <tr><td>Отмены</td><td>{{ stats.cancel_rate }}%</td></tr>
+  <tr><td>Средняя прибыль</td><td>${{ stats.profit }}</td></tr>
+  <tr><td>Оценка клиентов</td><td>{{ stats.satisfaction }}</td></tr>
+</table>
+
+<h3>Авиакомпании на маршруте (от самой пунктуальной)</h3>
+<table>
+  <tr><th>Авиакомпания</th><th>Рейсов</th><th>Задержка прибытия</th><th>Оценка</th><th>Отмены, %</th></tr>
+  {% for r in ranking %}
+  <tr>
+    <td>{{ r.airline }}</td><td>{{ r.flights }}</td><td>{{ r.avg_delay }}</td>
+    <td>{{ r.satisfaction }}</td><td>{{ r.cancel_rate }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<hr>
+<h2>Поиск пути с учётом времени</h2>
+<p>Самый ранний способ долететь, в том числе с пересадками (на пересадку минимум 60 минут).</p>
+<form method="post" action="/path">
+  <select name="origin">
+    {% for a in airports %}
+    <option {% if a == origin %}selected{% endif %}>{{ a }}</option>
+    {% endfor %}
+  </select>
+  →
+  <select name="destination">
+    {% for a in airports %}
+    <option {% if a == destination %}selected{% endif %}>{{ a }}</option>
+    {% endfor %}
+  </select>
+  вылет:
+  <select name="day">
+    {% for name in days %}
+    <option value="{{ loop.index0 }}">{{ name }}</option>
+    {% endfor %}
+  </select>
+  <input type="time" name="time" value="08:00">
+  <button>Найти путь</button>
+</form>
+
+{% if path %}
+<h3>Маршрут</h3>
+<table>
+  <tr><th>Рейс</th><th>Авиакомпания</th><th>Откуда → Куда</th><th>Вылет</th><th>Прилёт</th></tr>
+  {% for leg in path.legs %}
+  <tr>
+    <td>{{ leg.flight_id }}</td><td>{{ leg.airline }}</td>
+    <td>{{ leg.from }} → {{ leg.to }}</td><td>{{ leg.departure }}</td><td>{{ leg.arrival }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p>Всего в пути: {{ path.total_text }}, пересадок: {{ path.legs|length - 1 }}</p>
+{% endif %}
+{% endblock %}

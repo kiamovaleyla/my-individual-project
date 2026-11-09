@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Обзор рейсов</h2>
+<p>Всего рейсов: {{ overview.total_flights }}</p>
+<p>Средняя задержка прибытия: {{ overview.avg_arrival_delay }} мин</p>
+<p>Доля отмен: {{ overview.cancel_rate }}%</p>
+<p>Суммарная прибыль: ${{ overview.total_profit }} млрд</p>
+
+<h3>Авиакомпании</h3>
+<table>
+  <tr>
+    <th>Авиакомпания</th><th>Рейсов</th><th>Задержка вылета</th>
+    <th>Задержка прибытия</th><th>Отмены, %</th><th>Ср. прибыль, $</th><th>Оценка</th>
+  </tr>
+  {% for a in airlines %}
+  <tr>
+    <td>{{ a.airline }}</td><td>{{ a.flights }}</td><td>{{ a.dep_delay }}</td>
+    <td>{{ a.arr_delay }}</td><td>{{ a.cancel_rate }}</td><td>{{ a.profit }}</td><td>{{ a.satisfaction }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h3>Задержка прибытия по погоде (мин)</h3>
+<table>
+  {% for name, value in weather.items() %}
+  <tr><td>{{ name }}</td><td>{{ value }}</td></tr>
+  {% endfor %}
+</table>
+
+<h3>Причины задержек (кол-во рейсов)</h3>
+<table>
+  {% for name, count in reasons.items() %}
+  <tr><td>{{ name }}</td><td>{{ count }}</td></tr>
+  {% endfor %}
+</table>
+
+<h3>Самые проблемные маршруты</h3>
+<table>
+  {% for w in worst %}
+  <tr><td>{{ w.route }}</td><td>{{ w.flights }} рейсов</td><td>{{ w.avg_delay }} мин</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
